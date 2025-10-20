@@ -1,0 +1,379 @@
+<!-- ============================================
+     SNIPPET: Adicionar no login.php
+     Copie este código ANTES do </body>
+     ============================================ -->
+
+<!-- Botão Flutuante de Instalação PWA -->
+<button id="pwa-install-floating-btn" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    z-index: 99999;
+    transition: all 0.3s ease;
+    animation: slideInUp 0.5s ease, pulse 2s ease-in-out 1s infinite;
+">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    <span id="pwa-btn-text">Instalar App</span>
+</button>
+
+<!-- Banner de Instalação (iOS/Firefox) -->
+<div id="pwa-install-banner" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 16px 20px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 99998;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    animation: slideInDown 0.5s ease;
+">
+    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+        <img src="/assets/icons/apple-touch-icon.png" style="width: 40px; height: 40px; border-radius: 8px;">
+        <div style="flex: 1;">
+            <div style="font-weight: 600; font-size: 15px;">📱 Instale o Dualis</div>
+            <div style="font-size: 13px; opacity: 0.9;">Acesso rápido da sua tela inicial</div>
+        </div>
+    </div>
+    <button onclick="showInstallInstructions()" style="
+        padding: 8px 20px;
+        background: white;
+        color: #2563eb;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        white-space: nowrap;
+        margin-left: 12px;
+    ">
+        Ver Como
+    </button>
+    <button onclick="closeBanner()" style="
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0 8px;
+        margin-left: 12px;
+        opacity: 0.8;
+    ">×</button>
+</div>
+
+<!-- Modal de Instruções -->
+<div id="pwa-install-modal" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+">
+    <div style="
+        background: white;
+        border-radius: 24px;
+        max-width: 500px;
+        width: 100%;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: scaleIn 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+    ">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <img src="/assets/icons/web-app-manifest-192x192.png" style="width: 80px; height: 80px; border-radius: 16px; margin-bottom: 16px;">
+            <h2 style="font-size: 24px; color: #1f2937; margin-bottom: 8px;">Instalar Dualis</h2>
+            <p style="color: #6b7280; font-size: 14px;">Acesse o app direto da sua tela inicial</p>
+        </div>
+
+        <div id="pwa-modal-content" style="color: #4b5563; line-height: 1.8; font-size: 15px;">
+            <!-- Conteúdo dinâmico baseado no navegador -->
+        </div>
+
+        <button onclick="closeModal()" style="
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            font-size: 16px;
+        ">
+            Entendi
+        </button>
+    </div>
+</div>
+
+<style>
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+#pwa-install-floating-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+}
+
+@media (max-width: 640px) {
+    #pwa-install-floating-btn {
+        bottom: 80px; /* Acima de menus mobile */
+        right: 16px;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    #pwa-install-banner {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+(function() {
+    'use strict';
+
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('pwa-install-floating-btn');
+    const installBanner = document.getElementById('pwa-install-banner');
+    const installModal = document.getElementById('pwa-install-modal');
+    const modalContent = document.getElementById('pwa-modal-content');
+    const btnText = document.getElementById('pwa-btn-text');
+
+    // Detectar navegador e plataforma
+    function detectDevice() {
+        const ua = navigator.userAgent;
+        return {
+            isIOS: /iPhone|iPad|iPod/.test(ua),
+            isAndroid: /Android/.test(ua),
+            isChrome: /Chrome/.test(ua) && !/Edg/.test(ua),
+            isEdge: /Edg/.test(ua),
+            isFirefox: /Firefox/.test(ua),
+            isSafari: /Safari/.test(ua) && !/Chrome/.test(ua),
+            isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua),
+            isStandalone: window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone
+        };
+    }
+
+    const device = detectDevice();
+
+    // Se já está instalado, não mostrar nada
+    if (device.isStandalone) {
+        console.log('PWA já instalado');
+        return;
+    }
+
+    // Capturar evento de instalação (Chrome/Edge)
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('beforeinstallprompt fired');
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'flex';
+    });
+
+    // Click no botão flutuante
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            // Chrome/Edge - usar prompt nativo
+            btnText.textContent = 'Instalando...';
+            installBtn.disabled = true;
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                btnText.textContent = '✅ Instalado!';
+                setTimeout(() => {
+                    installBtn.style.display = 'none';
+                }, 2000);
+            } else {
+                btnText.textContent = 'Instalar App';
+                installBtn.disabled = false;
+            }
+
+            deferredPrompt = null;
+        } else {
+            // Outros navegadores - mostrar instruções
+            showInstallInstructions();
+        }
+    });
+
+    // Mostrar instruções baseado no dispositivo
+    window.showInstallInstructions = function() {
+        let instructions = '';
+
+        if (device.isIOS) {
+            instructions = `
+                <div style="background: #fef3c7; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                    <strong style="color: #92400e;">🍎 iPhone/iPad (Safari):</strong>
+                </div>
+                <ol style="padding-left: 24px; margin-bottom: 16px;">
+                    <li style="margin-bottom: 12px;">Toque no botão <strong>Compartilhar</strong> 
+                        <svg style="width:18px;height:18px;display:inline;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg> 
+                        (na barra inferior do Safari)</li>
+                    <li style="margin-bottom: 12px;">Role para baixo e toque em <strong>"Adicionar à Tela de Início"</strong></li>
+                    <li style="margin-bottom: 12px;">Toque em <strong>"Adicionar"</strong></li>
+                    <li>Pronto! O ícone do Dualis estará na sua tela inicial ✅</li>
+                </ol>
+            `;
+        } else if (device.isAndroid && !device.isChrome && !device.isEdge) {
+            instructions = `
+                <div style="background: #fef3c7; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                    <strong style="color: #92400e;">🤖 Android:</strong>
+                </div>
+                <ol style="padding-left: 24px; margin-bottom: 16px;">
+                    <li style="margin-bottom: 12px;">Toque nos <strong>três pontinhos</strong> (⋮) no canto superior</li>
+                    <li style="margin-bottom: 12px;">Selecione <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong></li>
+                    <li style="margin-bottom: 12px;">Confirme tocando em <strong>"Instalar"</strong></li>
+                    <li>O app estará disponível na sua tela inicial ✅</li>
+                </ol>
+            `;
+        } else if (device.isFirefox && !device.isMobile) {
+            instructions = `
+                <div style="background: #fecaca; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                    <strong style="color: #991b1b;">🦊 Firefox Desktop</strong>
+                </div>
+                <p style="margin-bottom: 16px;">
+                    O Firefox Desktop tem suporte limitado a PWAs. 
+                    Recomendamos usar <strong>Chrome</strong> ou <strong>Edge</strong> para instalar o app.
+                </p>
+                <p style="color: #6b7280; font-size: 14px;">
+                    Você pode adicionar aos favoritos com <strong>Ctrl+D</strong> (Windows) ou <strong>Cmd+D</strong> (Mac)
+                </p>
+            `;
+        } else {
+            instructions = `
+                <div style="background: #e0e7ff; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                    <strong style="color: #3730a3;">💻 Instalação via Menu:</strong>
+                </div>
+                <ol style="padding-left: 24px; margin-bottom: 16px;">
+                    <li style="margin-bottom: 12px;">Clique no <strong>menu do navegador</strong> (⋮ ou ⋯)</li>
+                    <li style="margin-bottom: 12px;">Procure por <strong>"Instalar Dualis"</strong> ou <strong>"Instalar aplicativo"</strong></li>
+                    <li style="margin-bottom: 12px;">Clique em <strong>"Instalar"</strong></li>
+                    <li>O app será adicionado ao seu computador ✅</li>
+                </ol>
+                <p style="color: #6b7280; font-size: 14px;">
+                    Ou procure pelo ícone ⊕ na barra de endereço
+                </p>
+            `;
+        }
+
+        modalContent.innerHTML = instructions;
+        installModal.style.display = 'flex';
+        closeBanner();
+    };
+
+    window.closeModal = function() {
+        installModal.style.display = 'none';
+    };
+
+    window.closeBanner = function() {
+        installBanner.style.display = 'none';
+        localStorage.setItem('pwa-banner-closed', Date.now());
+    };
+
+    // Mostrar banner ou botão baseado no dispositivo
+    function showInstallUI() {
+        const bannerClosed = localStorage.getItem('pwa-banner-closed');
+        const daysSinceClosed = bannerClosed ? (Date.now() - parseInt(bannerClosed)) / (1000 * 60 * 60 * 24) : 999;
+
+        // Se fechou há menos de 7 dias, não mostrar banner novamente
+        if (daysSinceClosed < 7) {
+            if (!deferredPrompt && (device.isChrome || device.isEdge)) {
+                installBtn.style.display = 'flex';
+            }
+            return;
+        }
+
+        if (device.isIOS || (device.isAndroid && !device.isChrome && !device.isEdge)) {
+            // iOS e Android não-Chrome: mostrar banner
+            setTimeout(() => {
+                installBanner.style.display = 'flex';
+            }, 2000);
+        } else if (device.isFirefox && !device.isMobile) {
+            // Firefox Desktop: mostrar botão mas com ação diferente
+            setTimeout(() => {
+                installBtn.style.display = 'flex';
+            }, 3000);
+        } else if (!deferredPrompt) {
+            // Outros: mostrar botão após 3 segundos se não tiver prompt
+            setTimeout(() => {
+                installBtn.style.display = 'flex';
+            }, 3000);
+        }
+    }
+
+    // Detectar quando PWA foi instalado
+    window.addEventListener('appinstalled', () => {
+        console.log('PWA instalado com sucesso');
+        installBtn.style.display = 'none';
+        installBanner.style.display = 'none';
+    });
+
+    // Fechar modal clicando fora
+    installModal.addEventListener('click', (e) => {
+        if (e.target === installModal) {
+            closeModal();
+        }
+    });
+
+    // Inicializar
+    showInstallUI();
+
+})();
+</script>
