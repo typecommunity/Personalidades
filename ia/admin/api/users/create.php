@@ -1,45 +1,54 @@
 <?php
+header('Content-Type: application/json');
 require_once '../../config.php';
 
-header('Content-Type: application/json');
-
+// Verificar se é admin
 if (!isAdmin()) {
-    jsonResponse(['success' => false, 'message' => 'Não autorizado'], 401);
-}
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    jsonResponse(['success' => false, 'message' => 'Método não permitido'], 405);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Acesso negado'
+    ]);
+    exit;
 }
 
 try {
-    $name = sanitize($_POST['name'] ?? '');
-    $email = sanitize($_POST['email'] ?? '');
+    // Validar dados recebidos
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    $phone = sanitize($_POST['phone'] ?? null);
-    $status = sanitize($_POST['status'] ?? 'active');
+    $phone = trim($_POST['phone'] ?? '');
+    $status = $_POST['status'] ?? 'active';
     
     // Validações
     if (empty($name)) {
-        jsonResponse(['success' => false, 'message' => 'Nome é obrigatório']);
+        throw new Exception('Nome é obrigatório');
     }
     
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        jsonResponse(['success' => false, 'message' => 'Email inválido']);
+    if (empty($email)) {
+        throw new Exception('Email é obrigatório');
     }
     
-    if (empty($password) || strlen($password) < 6) {
-        jsonResponse(['success' => false, 'message' => 'Senha deve ter no mínimo 6 caracteres']);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new Exception('Email inválido');
     }
     
-    // Verificar se email já existe
+    if (empty($password)) {
+        throw new Exception('Senha é obrigatória');
+    }
+    
+    if (strlen($password) < 6) {
+        throw new Exception('A senha deve ter no mínimo 6 caracteres');
+    }
+    
+    // Verificar se o email já existe
     $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetch()) {
-        jsonResponse(['success' => false, 'message' => 'Este email já está cadastrado']);
+        throw new Exception('Este email já está cadastrado');
     }
     
-    // Criar hash da senha
-    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+    // Hash da senha
+    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
     
     // Inserir usuário
     $stmt = $pdo->prepare("
@@ -51,26 +60,21 @@ try {
         $name,
         $email,
         $passwordHash,
-        $phone,
+        $phone ?: null,
         $status
     ]);
     
     $userId = $pdo->lastInsertId();
     
-    // Log da ação
-    logAdminAction(
-        $_SESSION['admin_id'],
-        'create_user',
-        "Usuário criado: $name ($email) - ID: $userId"
-    );
-    
-    jsonResponse([
+    echo json_encode([
         'success' => true,
-        'message' => 'Usuário criado com sucesso!',
-        'id' => $userId
+        'message' => 'Usuário criado com sucesso',
+        'user_id' => $userId
     ]);
     
-} catch (PDOException $e) {
-    error_log("Erro ao criar usuário: " . $e->getMessage());
-    jsonResponse(['success' => false, 'message' => 'Erro ao criar usuário'], 500);
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
